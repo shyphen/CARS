@@ -8,7 +8,7 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 # Your Gemini API key here
-GEMINI_API_KEY = "AIzaSyBct8u8MJZiqYK7XguBt084An7mAtym2TQ"  # Replace with your actual key
+GEMINI_API_KEY = "AIzaSyARO8_QPY9a3TNEFOkhDHcfgr_TAtYiFmM"  # Replace with your actual key
 
 # ---------- Car Recommendation Logic ----------
 def get_car_recommendations(car_type, budget, fuel_type, transmission, car_brand):
