@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoAdvisor - Smart Car Recommendations</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Notification Element -->
+    <div class="notification" id="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message"></span>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#" class="logo">
+                <i class="fas fa-car"></i>
+                AutoAdvisor
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-search"></i> Find Cars</a></li>
+                    <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <video autoplay muted loop playsinline>
+            <source src="t1.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Find Your Perfect Car Match</h1>
+            <p>Tell us what you're looking for and our AI will recommend the best vehicles that match your needs and budget.</p>
+            <a href="#recommendation-form" class="cta-button">Get Started <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Recommendation Form -->
+        <div class="card" id="recommendation-form">
+            <div class="card-header">
+                <h2><i class="fas fa-car-side"></i> Car Recommendation Wizard</h2>
+            </div>
+            <div class="card-body">
+                <form id="car-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="car-type">
+                                Car Type 
+                                <span class="tooltip">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span class="tooltip-text">Choose the body style that best fits your needs</span>
+                                </span>
+                            </label>
+                            <select id="car-type" class="form-control">
+                                <option value="">Select Car Type</option>
+                                <option value="sedan">Sedan</option>
+                                <option value="suv">SUV</option>
+                                <option value="truck">Truck</option>
+                                <option value="hatchback">Hatchback</option>
+                                <option value="convertible">Convertible</option>
+                                <option value="coupe">Coupe</option>
+                                <option value="minivan">Minivan</option>
+                                <option value="wagon">Wagon</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fuel-type">
+                                Fuel Type
+                                <span class="tooltip">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span class="tooltip-text">Select your preferred fuel option</span>
+                                </span>
+                            </label>
+                            <select id="fuel-type" class="form-control">
+                                <option value="">Select Fuel Type</option>
+                                <option value="petrol">Petrol</option>
+                                <option value="diesel">Diesel</option>
+                                <option value="electric">Electric</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="plugin_hybrid">Plug-in Hybrid</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transmission">Transmission</label>
+                            <select id="transmission" class="form-control">
+                                <option value="">Select Transmission</option>
+                                <option value="automatic">Automatic</option>
+                                <option value="manual">Manual</option>
+                                <option value="cvt">CVT</option>
+                                <option value="semi-automatic">Semi-Automatic</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="car-brand">
+                                Car Brand
+                                <span class="tooltip">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span class="tooltip-text">Optional: Enter your preferred brand</span>
+                                </span>
+                            </label>
+                            <input type="text" id="car-brand" class="form-control" placeholder="e.g., Toyota, BMW (Optional)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="budget">Budget (₹)</label>
+                        <div class="range-container">
+                            <input type="range" id="budget" class="range-slider" min="500000" max="10000000" step="100000" value="5000000">
+                            <div class="range-labels">
+                                <span>₹5,00,000</span>
+                                <span id="budget-value">₹50,00,000</span>
+                                <span>₹1,00,00,000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="toggle-filters" id="toggle-advanced">
+                        Advanced Filters <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <div class="advanced-filters" id="advanced-filters">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Number of Seats</label>
+                                <select id="seats" class="form-control">
+                                    <option value="">Any</option>
+                                    <option value="2">2 Seats</option>
+                                    <option value="4">4 Seats</option>
+                                    <option value="5">5 Seats</option>
+                                    <option value="7">7 Seats</option>
+                                    <option value="8+">8+ Seats</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Year</label>
+                                <select id="year" class="form-control">
+                                    <option value="">Any</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2020">2020</option>
+                                    <option value="older">2019 or older</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Condition</label>
+                                <select id="condition" class="form-control">
+                                    <option value="">Any</option>
+                                    <option value="new">New</option>
+                                    <option value="used">Used</option>
+                                    <option value="certified">Certified Pre-Owned</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Drivetrain</label>
+                                <select id="drivetrain" class="form-control">
+                                    <option value="">Any</option>
+                                    <option value="fwd">Front-Wheel Drive (FWD)</option>
+                                    <option value="rwd">Rear-Wheel Drive (RWD)</option>
+                                    <option value="awd">All-Wheel Drive (AWD)</option>
+                                    <option value="4wd">Four-Wheel Drive (4WD)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Must-Have Features</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="sunroof" value="sunroof">
+                                    <label for="sunroof">Sunroof</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="navigation" value="navigation">
+                                    <label for="navigation">Navigation</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="leather" value="leather">
+                                    <label for="leather">Leather Seats</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="bluetooth" value="bluetooth">
+                                    <label for="bluetooth">Bluetooth</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="backup_camera" value="backup_camera">
+                                    <label for="backup_camera">Backup Camera</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-search"></i> Find My Perfect Car
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="recommendation-wrapper" id="recommendation-section">
+            <h2>Your Recommended Cars</h2>
+            <p>Based on your preferences, here are the best matches we found:</p>
+            
+            <div class="spinner" id="spinner"></div>
+            
+            <div class="recommendations" id="recommendations">
+                <!-- Results will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About AutoAdvisor</h3>
+                <p>We help car buyers find their perfect match through personalized AI-powered recommendations based on your unique needs and preferences.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Find Cars</a></li>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Car Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Car Buying Guide</a></li>
+                    <li><a href="#">Financing Options</a></li>
+                    <li><a href="#">Car Maintenance Tips</a></li>
+                    <li><a href="#">Car Reviews</a></li>
+                    <li><a href="#">Car News</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt"></i> Lovely Professional University</li>
+                    <li><i class="fas fa-phone"></i>+91 9031980085</li>
+                    <li><i class="fas fa-envelope"></i> anuraganand852@gmail.com</li>
+                    <li><i class="fas fa-clock"></i> Mon-Fri: 9AM - 5PM</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2025 AutoAdvisor. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Budget slider functionality
+    const budgetSlider = document.getElementById('budget');
+    const budgetValue = document.getElementById('budget-value');
+    
+    budgetSlider.addEventListener('input', function() {
+        budgetValue.textContent = '₹' + parseInt(this.value).toLocaleString();
+    });
+
+    // Advanced filters toggle
+    const toggleAdvanced = document.getElementById('toggle-advanced');
+    const advancedFilters = document.getElementById('advanced-filters');
+    
+    toggleAdvanced.addEventListener('click', function() {
+        this.classList.toggle('active');
+        if (advancedFilters.style.display === 'block') {
+            advancedFilters.style.display = 'none';
+        } else {
+            advancedFilters.style.display = 'block';
+        }
+    });
+
+    // Form submission
+    const carForm = document.getElementById('car-form');
+    const spinner = document.getElementById('spinner');
+    const recommendationsContainer = document.getElementById('recommendations');
+    
+    carForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading spinner
+        spinner.style.display = 'block';
+        recommendationsContainer.innerHTML = '';
+        
+        // Get form values
+        const carType = document.getElementById('car-type').value;
+        const fuelType = document.getElementById('fuel-type').value;
+        const transmission = document.getElementById('transmission').value;
+        const carBrand = document.getElementById('car-brand').value;
+        const budget = document.getElementById('budget').value;
+        
+        // Get advanced filter values
+        const seats = document.getElementById('seats')?.value || '';
+        const year = document.getElementById('year')?.value || '';
+        const condition = document.getElementById('condition')?.value || '';
+        const drivetrain = document.getElementById('drivetrain')?.value || '';
+        
+        // Get selected features
+        const features = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+            features.push(checkbox.value);
+        });
+        
+        // Validate required fields
+        if (!carType) {
+            showNotification('Please select a car type', 'error');
+            spinner.style.display = 'none';
+            return;
+        }
+        
+        // Prepare data for the API request
+        const requestData = {
+            carType,
+            fuelType,
+            transmission,
+            carBrand,
+            budget,
+            seats,
+            year,
+            condition,
+            drivetrain,
+            features
+        };
+        
+        // Send request to the backend API
+        fetch('http://127.0.0.1:5000/get-car-recommendations', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading spinner
+            spinner.style.display = 'none';
+            
+            if (data.error) {
+                showNotification(data.error, 'error');
+                return;
+            }
+            
+            if (!data.recommendations || !Array.isArray(data.recommendations) || data.recommendations.length === 0) {
+                recommendationsContainer.innerHTML = '<p>No cars found matching your criteria. Try adjusting your filters.</p>';
+                return;
+            }
+            
+            // Render car recommendations
+            renderCarRecommendations(data.recommendations);
+            
+            // Scroll to recommendations
+            document.getElementById('recommendation-section').scrollIntoView({ behavior: 'smooth' });
+        })
+        .catch(error => {
+            spinner.style.display = 'none';
+            showNotification('Error: ' + error.message, 'error');
+            console.error('Error:', error);
+        });
+    });
+    
+    // Function to render car recommendations
+    function renderCarRecommendations(cars) {
+        recommendationsContainer.innerHTML = '';
+        
+        cars.forEach(car => {
+            const carCard = document.createElement('div');
+            carCard.className = 'recommendation-card';
+            
+            // Generate random rating between 3.5 and 5.0
+            const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+            
+            carCard.innerHTML = `
+                <div class="car-image">
+                    <img src="/api/placeholder/300/180" alt="${car.name || 'Car'}" />
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">${car.name || 'Unknown'}</h3>
+                    <div class="car-price">${car.price || 'Price not available'}</div>
+                    
+                    <div class="rating">
+                        ${generateStarRating(rating)}
+                        <span style="margin-left: 5px;">${rating}/5</span>
+                    </div>
+                    
+                    <div class="car-specs">
+                        <div class="car-spec">
+                            <i class="fas fa-gas-pump"></i>
+                            <span>${car.fuel_type || 'Not specified'}</span>
+                        </div>
+                        <div class="car-spec">
+                            <i class="fas fa-cog"></i>
+                            <span>${car.transmission || 'Not specified'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="car-features">
+                        ${car.features ? `
+                            <div class="car-feature">
+                                <i class="fas fa-engine"></i>
+                                <span>${car.features.engine || 'Not specified'}</span>
+                            </div>
+                            <div class="car-feature">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>${car.features.fuel_efficiency || 'Not specified'}</span>
+                            </div>
+                            <div class="car-feature">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>${car.features.safety || 'Not specified'}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                        ${car.description || 'No description available.'}
+                    </p>
+                    
+                    <div class="car-actions">
+                        <button class="btn btn-primary">View Details</button>
+                        <button class="btn btn-secondary">Save Car</button>
+                    </div>
+                </div>
+            `;
+            
+            recommendationsContainer.appendChild(carCard);
+        });
+    }
+    
+    // Function to generate star rating HTML
+    function generateStarRating(rating) {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+        
+        let starsHTML = '';
+        
+        // Full stars
+        for (let i = 0; i < fullStars; i++) {
+            starsHTML += '<i class="fas fa-star"></i>';
+        }
+        
+        // Half star
+        if (halfStar) {
+            starsHTML += '<i class="fas fa-star-half-alt"></i>';
+        }
+        
+        // Empty stars
+        for (let i = 0; i < emptyStars; i++) {
+            starsHTML += '<i class="far fa-star"></i>';
+        }
+        
+        return starsHTML;
+    }
+    
+    // Function to show notifications
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        notification.className = 'notification ' + type;
+        notificationMessage.textContent = message;
+        
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+    
+    // Initialize any additional functionality
+    function initializeAdditionalFeatures() {
+        // Set initial value for budget display
+        budgetValue.textContent = '₹' + parseInt(budgetSlider.value).toLocaleString();
+        
+        // Add event listeners for car view and save buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn') && e.target.textContent === 'View Details') {
+                // Prevent default if it's a link
+                e.preventDefault();
+                // Show a notification for now (in a real app, this would navigate to a details page)
+                showNotification('Details view is not implemented in this demo', 'info');
+            }
+            
+            if (e.target.classList.contains('btn') && e.target.textContent === 'Save Car') {
+                // Prevent default if it's a link
+                e.preventDefault();
+                // Show a notification
+                showNotification('Car saved to your favorites!', 'success');
+            }
+        });
+    }
+    
+    // Call initialization function
+    initializeAdditionalFeatures();
+});
+function toggleChat() {
+  const chatWindow = document.getElementById("chat-window");
+  chatWindow.style.display = chatWindow.style.display === "none" ? "block" : "none";
+}
+
+async function sendMessage() {
+  const input = document.getElementById("user-input");
+  const message = input.value.trim();
+  if (!message) return;
+
+  const messagesBox = document.getElementById("chat-messages");
+  messagesBox.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
+  input.value = "Thinking...";
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: message }) // ✅ FIXED: Should be `message`, not `prompt`
+    });
+
+    const data = await response.json();
+    const reply = data.response || "Sorry, I didn't understand that."; // ✅ FIXED: `data.response`
+    messagesBox.innerHTML += `<div><strong>Bot:</strong> ${reply}</div>`;
+  } catch (err) {
+    messagesBox.innerHTML += `<div><strong>Bot:</strong> Error getting response.</div>`;
+  }
+
+  input.value = "";
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+</script>
+<div id="chatbot-container">
+    <div id="chat-window" style="display: none;">
+      <div id="chat-messages"></div>
+      <input id="user-input" placeholder="Ask me anything about cars..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="chat-icon" onclick="toggleChat()">💬</div>
+  </div>
+</body>
+</html>
