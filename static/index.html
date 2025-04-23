@@ -284,288 +284,192 @@
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    // Budget slider functionality
-    const budgetSlider = document.getElementById('budget');
-    const budgetValue = document.getElementById('budget-value');
-    
-    budgetSlider.addEventListener('input', function() {
-        budgetValue.textContent = '₹' + parseInt(this.value).toLocaleString();
-    });
+<script>
+    const BASE_URL = "https://cars-lv03.onrender.com";
 
-    // Advanced filters toggle
-    const toggleAdvanced = document.getElementById('toggle-advanced');
-    const advancedFilters = document.getElementById('advanced-filters');
-    
-    toggleAdvanced.addEventListener('click', function() {
-        this.classList.toggle('active');
-        if (advancedFilters.style.display === 'block') {
-            advancedFilters.style.display = 'none';
-        } else {
-            advancedFilters.style.display = 'block';
-        }
-    });
-
-    // Form submission
-    const carForm = document.getElementById('car-form');
-    const spinner = document.getElementById('spinner');
-    const recommendationsContainer = document.getElementById('recommendations');
-    
-    carForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+        const budgetSlider = document.getElementById('budget');
+        const budgetValue = document.getElementById('budget-value');
         
-        // Show loading spinner
-        spinner.style.display = 'block';
-        recommendationsContainer.innerHTML = '';
-        
-        // Get form values
-        const carType = document.getElementById('car-type').value;
-        const fuelType = document.getElementById('fuel-type').value;
-        const transmission = document.getElementById('transmission').value;
-        const carBrand = document.getElementById('car-brand').value;
-        const budget = document.getElementById('budget').value;
-        
-        // Get advanced filter values
-        const seats = document.getElementById('seats')?.value || '';
-        const year = document.getElementById('year')?.value || '';
-        const condition = document.getElementById('condition')?.value || '';
-        const drivetrain = document.getElementById('drivetrain')?.value || '';
-        
-        // Get selected features
-        const features = [];
-        document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-            features.push(checkbox.value);
+        budgetSlider.addEventListener('input', function() {
+            budgetValue.textContent = '₹' + parseInt(this.value).toLocaleString();
         });
+
+        const toggleAdvanced = document.getElementById('toggle-advanced');
+        const advancedFilters = document.getElementById('advanced-filters');
         
-        // Validate required fields
-        if (!carType) {
-            showNotification('Please select a car type', 'error');
-            spinner.style.display = 'none';
-            return;
-        }
+        toggleAdvanced.addEventListener('click', function() {
+            this.classList.toggle('active');
+            advancedFilters.style.display = (advancedFilters.style.display === 'block') ? 'none' : 'block';
+        });
+
+        const carForm = document.getElementById('car-form');
+        const spinner = document.getElementById('spinner');
+        const recommendationsContainer = document.getElementById('recommendations');
         
-        // Prepare data for the API request
-        const requestData = {
-            carType,
-            fuelType,
-            transmission,
-            carBrand,
-            budget,
-            seats,
-            year,
-            condition,
-            drivetrain,
-            features
-        };
-        
-        // Send request to the backend API
-        fetch('http://127.0.0.1:5000/get-car-recommendations', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestData)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Hide loading spinner
-            spinner.style.display = 'none';
+        carForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            if (data.error) {
-                showNotification(data.error, 'error');
+            spinner.style.display = 'block';
+            recommendationsContainer.innerHTML = '';
+            
+            const requestData = {
+                carType: document.getElementById('car-type').value,
+                fuelType: document.getElementById('fuel-type').value,
+                transmission: document.getElementById('transmission').value,
+                carBrand: document.getElementById('car-brand').value,
+                budget: document.getElementById('budget').value,
+                seats: document.getElementById('seats')?.value || '',
+                year: document.getElementById('year')?.value || '',
+                condition: document.getElementById('condition')?.value || '',
+                drivetrain: document.getElementById('drivetrain')?.value || '',
+                features: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value)
+            };
+
+            if (!requestData.carType) {
+                showNotification('Please select a car type', 'error');
+                spinner.style.display = 'none';
                 return;
             }
-            
-            if (!data.recommendations || !Array.isArray(data.recommendations) || data.recommendations.length === 0) {
-                recommendationsContainer.innerHTML = '<p>No cars found matching your criteria. Try adjusting your filters.</p>';
-                return;
-            }
-            
-            // Render car recommendations
-            renderCarRecommendations(data.recommendations);
-            
-            // Scroll to recommendations
-            document.getElementById('recommendation-section').scrollIntoView({ behavior: 'smooth' });
-        })
-        .catch(error => {
-            spinner.style.display = 'none';
-            showNotification('Error: ' + error.message, 'error');
-            console.error('Error:', error);
+
+            fetch(`${BASE_URL}/get-car-recommendations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                spinner.style.display = 'none';
+                if (data.error) {
+                    showNotification(data.error, 'error');
+                } else if (!data.recommendations || !data.recommendations.length) {
+                    recommendationsContainer.innerHTML = '<p>No cars found matching your criteria. Try adjusting your filters.</p>';
+                } else {
+                    renderCarRecommendations(data.recommendations);
+                    document.getElementById('recommendation-section').scrollIntoView({ behavior: 'smooth' });
+                }
+            })
+            .catch(error => {
+                spinner.style.display = 'none';
+                showNotification('Error: ' + error.message, 'error');
+                console.error('Error:', error);
+            });
         });
-    });
-    
-    // Function to render car recommendations
-    function renderCarRecommendations(cars) {
-        recommendationsContainer.innerHTML = '';
-        
-        cars.forEach(car => {
-            const carCard = document.createElement('div');
-            carCard.className = 'recommendation-card';
-            
-            // Generate random rating between 3.5 and 5.0
-            const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
-            
-            carCard.innerHTML = `
-                <div class="car-image">
-                    <img src="/api/placeholder/300/180" alt="${car.name || 'Car'}" />
-                </div>
-                <div class="car-info">
-                    <h3 class="car-name">${car.name || 'Unknown'}</h3>
-                    <div class="car-price">${car.price || 'Price not available'}</div>
-                    
-                    <div class="rating">
-                        ${generateStarRating(rating)}
-                        <span style="margin-left: 5px;">${rating}/5</span>
+
+        function renderCarRecommendations(cars) {
+            recommendationsContainer.innerHTML = '';
+            cars.forEach(car => {
+                const carCard = document.createElement('div');
+                carCard.className = 'recommendation-card';
+                const rating = (Math.random() * 1.5 + 3.5).toFixed(1);
+
+                carCard.innerHTML = `
+                    <div class="car-image">
+                        <img src="/api/placeholder/300/180" alt="${car.name || 'Car'}" />
                     </div>
-                    
-                    <div class="car-specs">
-                        <div class="car-spec">
-                            <i class="fas fa-gas-pump"></i>
-                            <span>${car.fuel_type || 'Not specified'}</span>
+                    <div class="car-info">
+                        <h3 class="car-name">${car.name || 'Unknown'}</h3>
+                        <div class="car-price">${car.price || 'Price not available'}</div>
+                        <div class="rating">
+                            ${generateStarRating(rating)}
+                            <span style="margin-left: 5px;">${rating}/5</span>
                         </div>
-                        <div class="car-spec">
-                            <i class="fas fa-cog"></i>
-                            <span>${car.transmission || 'Not specified'}</span>
+                        <div class="car-specs">
+                            <div class="car-spec"><i class="fas fa-gas-pump"></i><span>${car.fuel_type || 'Not specified'}</span></div>
+                            <div class="car-spec"><i class="fas fa-cog"></i><span>${car.transmission || 'Not specified'}</span></div>
+                        </div>
+                        <div class="car-features">
+                            ${car.features ? `
+                                <div class="car-feature"><i class="fas fa-engine"></i><span>${car.features.engine || 'Not specified'}</span></div>
+                                <div class="car-feature"><i class="fas fa-tachometer-alt"></i><span>${car.features.fuel_efficiency || 'Not specified'}</span></div>
+                                <div class="car-feature"><i class="fas fa-shield-alt"></i><span>${car.features.safety || 'Not specified'}</span></div>
+                            ` : ''}
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">${car.description || 'No description available.'}</p>
+                        <div class="car-actions">
+                            <button class="btn btn-primary">View Details</button>
+                            <button class="btn btn-secondary">Save Car</button>
                         </div>
                     </div>
-                    
-                    <div class="car-features">
-                        ${car.features ? `
-                            <div class="car-feature">
-                                <i class="fas fa-engine"></i>
-                                <span>${car.features.engine || 'Not specified'}</span>
-                            </div>
-                            <div class="car-feature">
-                                <i class="fas fa-tachometer-alt"></i>
-                                <span>${car.features.fuel_efficiency || 'Not specified'}</span>
-                            </div>
-                            <div class="car-feature">
-                                <i class="fas fa-shield-alt"></i>
-                                <span>${car.features.safety || 'Not specified'}</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                    
-                    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
-                        ${car.description || 'No description available.'}
-                    </p>
-                    
-                    <div class="car-actions">
-                        <button class="btn btn-primary">View Details</button>
-                        <button class="btn btn-secondary">Save Car</button>
-                    </div>
-                </div>
-            `;
-            
-            recommendationsContainer.appendChild(carCard);
-        });
-    }
-    
-    // Function to generate star rating HTML
-    function generateStarRating(rating) {
-        const fullStars = Math.floor(rating);
-        const halfStar = rating % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-        
-        let starsHTML = '';
-        
-        // Full stars
-        for (let i = 0; i < fullStars; i++) {
-            starsHTML += '<i class="fas fa-star"></i>';
+                `;
+                recommendationsContainer.appendChild(carCard);
+            });
         }
-        
-        // Half star
-        if (halfStar) {
-            starsHTML += '<i class="fas fa-star-half-alt"></i>';
+
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+            let starsHTML = '';
+
+            for (let i = 0; i < fullStars; i++) starsHTML += '<i class="fas fa-star"></i>';
+            if (halfStar) starsHTML += '<i class="fas fa-star-half-alt"></i>';
+            for (let i = 0; i < emptyStars; i++) starsHTML += '<i class="far fa-star"></i>';
+
+            return starsHTML;
         }
-        
-        // Empty stars
-        for (let i = 0; i < emptyStars; i++) {
-            starsHTML += '<i class="far fa-star"></i>';
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+            notification.className = 'notification ' + type;
+            notificationMessage.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 5000);
         }
-        
-        return starsHTML;
-    }
-    
-    // Function to show notifications
-    function showNotification(message, type = 'info') {
-        const notification = document.getElementById('notification');
-        const notificationMessage = document.getElementById('notification-message');
-        
-        notification.className = 'notification ' + type;
-        notificationMessage.textContent = message;
-        
-        notification.classList.add('show');
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 5000);
-    }
-    
-    // Initialize any additional functionality
-    function initializeAdditionalFeatures() {
-        // Set initial value for budget display
-        budgetValue.textContent = '₹' + parseInt(budgetSlider.value).toLocaleString();
-        
-        // Add event listeners for car view and save buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('btn') && e.target.textContent === 'View Details') {
-                // Prevent default if it's a link
-                e.preventDefault();
-                // Show a notification for now (in a real app, this would navigate to a details page)
-                showNotification('Details view is not implemented in this demo', 'info');
-            }
-            
-            if (e.target.classList.contains('btn') && e.target.textContent === 'Save Car') {
-                // Prevent default if it's a link
-                e.preventDefault();
-                // Show a notification
-                showNotification('Car saved to your favorites!', 'success');
-            }
-        });
-    }
-    
-    // Call initialization function
-    initializeAdditionalFeatures();
-});
-function toggleChat() {
-  const chatWindow = document.getElementById("chat-window");
-  chatWindow.style.display = chatWindow.style.display === "none" ? "block" : "none";
-}
 
-async function sendMessage() {
-  const input = document.getElementById("user-input");
-  const message = input.value.trim();
-  if (!message) return;
+        function initializeAdditionalFeatures() {
+            budgetValue.textContent = '₹' + parseInt(budgetSlider.value).toLocaleString();
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn')) {
+                    e.preventDefault();
+                    if (e.target.textContent === 'View Details') {
+                        showNotification('Details view is not implemented in this demo', 'info');
+                    }
+                    if (e.target.textContent === 'Save Car') {
+                        showNotification('Car saved to your favorites!', 'success');
+                    }
+                }
+            });
+        }
 
-  const messagesBox = document.getElementById("chat-messages");
-  messagesBox.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
-  input.value = "Thinking...";
-
-  try {
-    const response = await fetch("http://127.0.0.1:5000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: message }) // ✅ FIXED: Should be `message`, not `prompt`
+        initializeAdditionalFeatures();
     });
 
-    const data = await response.json();
-    const reply = data.response || "Sorry, I didn't understand that."; // ✅ FIXED: `data.response`
-    messagesBox.innerHTML += `<div><strong>Bot:</strong> ${reply}</div>`;
-  } catch (err) {
-    messagesBox.innerHTML += `<div><strong>Bot:</strong> Error getting response.</div>`;
-  }
+    function toggleChat() {
+        const chatWindow = document.getElementById("chat-window");
+        chatWindow.style.display = chatWindow.style.display === "none" ? "block" : "none";
+    }
 
-  input.value = "";
-  messagesBox.scrollTop = messagesBox.scrollHeight;
-}
+    async function sendMessage() {
+        const input = document.getElementById("user-input");
+        const message = input.value.trim();
+        if (!message) return;
 
+        const messagesBox = document.getElementById("chat-messages");
+        messagesBox.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
+        input.value = "Thinking...";
+
+        try {
+            const response = await fetch(`${BASE_URL}/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            const reply = data.response || "Sorry, I didn't understand that.";
+            messagesBox.innerHTML += `<div><strong>Bot:</strong> ${reply}</div>`;
+        } catch (err) {
+            messagesBox.innerHTML += `<div><strong>Bot:</strong> Error getting response.</div>`;
+        }
+
+        input.value = "";
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
 </script>
 <div id="chatbot-container">
     <div id="chat-window" style="display: none;">
